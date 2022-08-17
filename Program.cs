@@ -80,7 +80,7 @@ namespace Service.Check
                 catch (Exception ex)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Write(ex.InnerException);
+                    Console.Write(ex.Message);
                     Console.ResetColor();
                 }
 
