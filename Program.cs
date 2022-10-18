@@ -23,6 +23,24 @@ namespace Service.Check
             Console.WriteLine("-----------------------------------");
             Console.WriteLine("");
 
+            //Verificando se a VPN está ativa - se não estive, liga
+            if (Process.GetProcessesByName("openvpn-gui").Length <= 0)
+            {
+                Console.WriteLine("-----------------------------------");
+                Console.WriteLine("Iniciando e conectando VPN");
+                Console.WriteLine("-----------------------------------");
+                Console.WriteLine("");
+
+                Process p = new Process();
+                p.StartInfo.FileName = "C:\\Program Files\\OpenVPN\\bin\\openvpn-gui.exe";
+                p.StartInfo.WorkingDirectory = @"C:\Program Files\OpenVPN\bin";
+                p.StartInfo.Arguments = " --connect VPN-LKM-Vivo.ovpn";
+                p.Start();
+
+                //Aguarda 5 segundos para estabilização
+                Thread.Sleep(10000);
+            }
+
             //Obtendo configuração
             var exeFile = Assembly.GetExecutingAssembly().Location;
             string exeDirectory = Path.GetDirectoryName(exeFile);
@@ -99,24 +117,6 @@ namespace Service.Check
 
         private static void checkService(string ip, string serv)
         {
-            //Verificando se a VPN está ativa - se não estive, liga
-            if (Process.GetProcessesByName("openvpn-gui").Length <= 0)
-            {
-                Console.WriteLine("-----------------------------------");
-                Console.WriteLine("Iniciando e conectando VPN");
-                Console.WriteLine("-----------------------------------");
-                Console.WriteLine("");
-
-                Process p = new Process();
-                p.StartInfo.FileName = "C:\\Program Files\\OpenVPN\\bin\\openvpn-gui.exe";
-                p.StartInfo.WorkingDirectory = @"C:\Program Files\OpenVPN\bin";
-                p.StartInfo.Arguments = " --connect VPN-LKM-Vivo.ovpn";
-                p.Start();
-
-                //Aguarda 5 segundos para estabilização
-                Thread.Sleep(10000);
-            }
-
             string item = string.Concat(ip, " - ", serv, ": ");
             Console.ResetColor();
             Console.Write(item);
