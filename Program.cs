@@ -151,6 +151,7 @@ namespace Service.Check
             Console.Write("\r\n");
 
             //Finalização
+            Console.ResetColor();
             Console.WriteLine("");
             Console.WriteLine("-----------------------------------");
             Console.WriteLine(string.Concat("Finalizado - ", DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")));
