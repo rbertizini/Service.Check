@@ -17,6 +17,15 @@ namespace Service.Check
     {
         static void Main(string[] args)
         {
+            //Contadores globais
+            int gTot = 0;
+            int sTot = 0;
+            int sSuc = 0;
+            int sErr = 0;
+            int wTot = 0;
+            int wSuc = 0;
+            int wErr = 0;
+
             //Apresentação
             Console.WriteLine("-----------------------------------");
             Console.WriteLine("Verificação de serviços");
@@ -52,13 +61,94 @@ namespace Service.Check
             foreach (string line in lines)
             {
                 string[] info = line.Split(';');
+                gTot++;
 
                 if (info[0] == "S")
-                    checkService(info[1], info[2]);
+                {
+                    int tsSuc = 0;
+                    int tsErr = 0;
+                    checkService(info[1], info[2], out tsSuc, out tsErr);
+
+                    sTot++;
+                    sSuc += tsSuc;
+                    sErr += tsErr;
+
+                    continue;
+                }
 
                 if (info[0] == "W")
-                    checkWeb(info[1]);
+                {
+                    int twSuc = 0;
+                    int twErr = 0;
+                    checkWeb(info[1], out twSuc, out twErr);
+
+                    wTot++;
+                    wSuc += twSuc;
+                    wErr += twErr;
+
+                    continue;
+                }
             }
+
+            //Resumo
+            Console.WriteLine("");
+            Console.WriteLine("-----------------------------------");
+            Console.WriteLine("Resumo de processamento");
+            Console.WriteLine("-----------------------------------");
+
+            Console.ResetColor();
+            Console.Write("Total de itens processados: ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(gTot);
+            Console.Write("\r\n");
+
+            Console.ResetColor();
+            Console.Write("Total de serviços processados: ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(sTot);
+            Console.Write("\r\n");
+
+            Console.ResetColor();
+            Console.Write("Total de serviços com sucesso: ");
+            if (sTot > sSuc)
+                Console.ForegroundColor = ConsoleColor.Red;
+            else
+                Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(sSuc);
+            Console.Write("\r\n");
+
+            Console.ResetColor();
+            Console.Write("Total de serviços com erro: ");
+            if (sErr > 0)
+                Console.ForegroundColor = ConsoleColor.Red;
+            else
+                Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(sErr);
+            Console.Write("\r\n");
+
+            Console.ResetColor();
+            Console.Write("Total de websites processados: ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(wTot);
+            Console.Write("\r\n");
+
+            Console.ResetColor();
+            Console.Write("Total de websites com sucesso: ");
+            if (wTot > wSuc)
+                Console.ForegroundColor = ConsoleColor.Red;
+            else
+                Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(wSuc);
+            Console.Write("\r\n");
+
+            Console.ResetColor();
+            Console.Write("Total de websites com erro: ");
+            if (wErr > 0)
+                Console.ForegroundColor = ConsoleColor.Red;
+            else
+                Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(wErr);
+            Console.Write("\r\n");
 
             //Finalização
             Console.WriteLine("");
@@ -69,11 +159,14 @@ namespace Service.Check
             Console.ReadKey();
         }
 
-        private static void checkWeb(string url)
+        public static void checkWeb(string url, out int wSuc, out int wErr)
         {
             string item = string.Concat(url, ": ");
             Console.ResetColor();
             Console.Write(item);
+
+            wSuc = 0;
+            wErr = 0;
 
             string status = string.Empty;
             ConsoleColor color = ConsoleColor.White;
@@ -93,6 +186,8 @@ namespace Service.Check
                         Console.ForegroundColor = color;
                         Console.Write(status);
                         Console.ResetColor();
+
+                        wSuc = 1;
                     }
                 }
                 catch (WebException wex)
@@ -103,6 +198,8 @@ namespace Service.Check
                     Console.ForegroundColor = color;
                     Console.Write(status);
                     Console.ResetColor();
+
+                    wErr = 1;
                 }
             }
             catch (Exception ex)
@@ -110,16 +207,21 @@ namespace Service.Check
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Write(ex.Message);
                 Console.ResetColor();
+
+                wErr = 1;
             }
 
             Console.Write("\r\n");
         }
 
-        private static void checkService(string ip, string serv)
+        private static void checkService(string ip, string serv, out int sSuc, out int sErr)
         {
             string item = string.Concat(ip, " - ", serv, ": ");
             Console.ResetColor();
             Console.Write(item);
+
+            sSuc = 0;
+            sErr = 0;
 
             string status = string.Empty;
             ConsoleColor color = ConsoleColor.White;
@@ -161,12 +263,16 @@ namespace Service.Check
                 Console.ForegroundColor = color;
                 Console.Write(status);
                 Console.ResetColor();
+
+                sSuc = 1;
             }
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Write(ex.Message);
                 Console.ResetColor();
+
+                sErr = 1;
             }
 
             Console.Write("\r\n");

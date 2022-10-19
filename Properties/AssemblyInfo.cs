@@ -5,10 +5,10 @@ using System.Runtime.InteropServices;
 // As informações gerais sobre um assembly são controladas por
 // conjunto de atributos. Altere estes valores de atributo para modificar as informações
 // associadas a um assembly.
-[assembly: AssemblyTitle("Service.Check")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Eiko - Verificação de processo")]
+[assembly: AssemblyDescription("Verificação de serviços e websites")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Eiko Tecnologia")]
 [assembly: AssemblyProduct("Service.Check")]
 [assembly: AssemblyCopyright("Copyright ©  2022")]
 [assembly: AssemblyTrademark("")]
