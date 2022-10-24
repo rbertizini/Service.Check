@@ -28,16 +28,14 @@ namespace Service.Check
 
             //Apresentação
             Console.WriteLine("-----------------------------------");
-            Console.WriteLine("Verificação de serviços");
+            Console.WriteLine("Verificação de serviços e sites");
             Console.WriteLine("-----------------------------------");
             Console.WriteLine("");
 
             //Verificando se a VPN está ativa - se não estive, liga
             if (Process.GetProcessesByName("openvpn-gui").Length <= 0)
             {
-                Console.WriteLine("-----------------------------------");
-                Console.WriteLine("Iniciando e conectando VPN");
-                Console.WriteLine("-----------------------------------");
+                Console.WriteLine("> Iniciando e conectando VPN LKM");
                 Console.WriteLine("");
 
                 Process p = new Process();
@@ -47,10 +45,40 @@ namespace Service.Check
                 p.Start();
 
                 //Aguarda 5 segundos para estabilização
-                Thread.Sleep(10000);
+                Thread.Sleep(12000);
+            }
+            else
+            {
+                Console.WriteLine("> VPN LKM Conectada");
+                Console.WriteLine("");
             }
 
+            //Verificando velocidade de conexão
+            double[] speeds = new double[5];
+            for (int i = 0; i < 5; i++)
+            {
+                Stopwatch stopwatch = new Stopwatch();
+
+                stopwatch.Reset();
+                stopwatch.Start();
+                WebClient webClient = new WebClient();
+                byte[] bytes = webClient.DownloadData("http://www.lkm.com.br");
+
+                stopwatch.Stop();
+
+                double seconds = stopwatch.Elapsed.TotalSeconds;
+                double speed = bytes.Count() / seconds;
+                speeds[i] = speed;
+            }
+            Console.WriteLine(string.Format("> Estimativa velocidade internet: {0}MB/s", ((speeds.Average() / 1000).ToString("0.##"))));
+            Console.WriteLine("");
+
             //Obtendo configuração
+            Console.WriteLine("-----------------------------------");
+            Console.WriteLine("Verificação de ambientes");
+            Console.WriteLine("-----------------------------------");
+            Console.WriteLine("");
+
             var exeFile = Assembly.GetExecutingAssembly().Location;
             string exeDirectory = Path.GetDirectoryName(exeFile);
             string[] lines = File.ReadAllLines(Path.Combine(exeDirectory, "config.ini"));
