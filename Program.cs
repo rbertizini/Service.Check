@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.ServiceProcess;
 using System.Text;
@@ -25,6 +26,9 @@ namespace Service.Check
             int wTot = 0;
             int wSuc = 0;
             int wErr = 0;
+            int pTot = 0;
+            int pSuc = 0;
+            int pErr = 0;
 
             //Apresentação
             Console.WriteLine("-----------------------------------");
@@ -35,17 +39,24 @@ namespace Service.Check
             //Verificando se a VPN está ativa - se não estive, liga
             if (Process.GetProcessesByName("openvpn-gui").Length <= 0)
             {
-                Console.WriteLine("> Iniciando e conectando VPN LKM");
-                Console.WriteLine("");
+                if (File.Exists("C:\\Program Files\\OpenVPN\\bin\\openvpn-gui.exe"))
+                {
+                    Console.WriteLine("> Iniciando e conectando VPN LKM");
+                    Console.WriteLine("");
 
-                Process p = new Process();
-                p.StartInfo.FileName = "C:\\Program Files\\OpenVPN\\bin\\openvpn-gui.exe";
-                p.StartInfo.WorkingDirectory = @"C:\Program Files\OpenVPN\bin";
-                p.StartInfo.Arguments = " --connect VPN-LKM-Vivo.ovpn";
-                p.Start();
+                    Process p = new Process();
+                    p.StartInfo.FileName = "C:\\Program Files\\OpenVPN\\bin\\openvpn-gui.exe";
+                    p.StartInfo.WorkingDirectory = @"C:\Program Files\OpenVPN\bin";
+                    p.StartInfo.Arguments = " --connect VPN-LKM-Vivo.ovpn";
+                    p.Start();
 
-                //Aguarda 5 segundos para estabilização
-                Thread.Sleep(12000);
+                    //Aguarda 5 segundos para estabilização
+                    Thread.Sleep(12000);
+                }
+                else
+                {
+                    Console.WriteLine("> OpenVPN-GUI não localizada");
+                }
             }
             else
             {
@@ -116,6 +127,19 @@ namespace Service.Check
 
                     continue;
                 }
+
+                if (info[0] == "P")
+                {
+                    int tpSuc = 0;
+                    int tpErr = 0;
+                    checkPing(info[1], info[2], out tpSuc, out tpErr);
+
+                    pTot = pTot + tpSuc + tpErr;
+                    pSuc += tpSuc;
+                    pErr += tpErr;
+
+                    continue;
+                }
             }
 
             //Resumo
@@ -176,6 +200,30 @@ namespace Service.Check
             else
                 Console.ForegroundColor = ConsoleColor.Green;
             Console.Write(wErr);
+            Console.Write("\r\n");
+
+            Console.ResetColor();
+            Console.Write("Total de pings processados: ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(pTot);
+            Console.Write("\r\n");
+
+            Console.ResetColor();
+            Console.Write("Total de pings com sucesso: ");
+            if (pTot > pSuc)
+                Console.ForegroundColor = ConsoleColor.Red;
+            else
+                Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(pSuc);
+            Console.Write("\r\n");
+
+            Console.ResetColor();
+            Console.Write("Total de pings com erro: ");
+            if (pErr > 0)
+                Console.ForegroundColor = ConsoleColor.Red;
+            else
+                Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(pErr);
             Console.Write("\r\n");
 
             //Finalização
@@ -305,6 +353,83 @@ namespace Service.Check
             }
 
             Console.Write("\r\n");
+        }
+
+        private static void checkPing(string ip, string qtd, out int pSuc, out int pErr)
+        {
+            pSuc = 0;
+            pErr = 0;
+
+            string status = string.Empty;
+            try
+            {
+                for (int i=0; i<Int32.Parse(qtd); i++)
+                {
+                    string item = string.Concat(ip, ": ");
+                    Console.ResetColor();
+                    Console.Write(item);
+
+                    ConsoleColor color = ConsoleColor.White;
+
+                    Ping pinger = null;
+                    try
+                    {
+                        pinger = new Ping();
+                        PingReply resp = pinger.Send(ip);
+
+                        if (resp.Status == IPStatus.Success)
+                        {
+                            status = string.Concat(resp.Status.ToString(), " RTT=", resp.RoundtripTime, "ms TTL=", resp.Options.Ttl, "ms BYTES=", resp.Buffer.Length);
+
+                            color = ConsoleColor.Green;
+
+                            Console.ForegroundColor = color;
+                            Console.Write(status);
+                            Console.ResetColor();
+
+                            pSuc++;
+                        }
+                        else
+                        {
+                            status = string.Concat("Erro - ", resp.Status.ToString());
+                            color = ConsoleColor.Red;
+
+                            Console.ForegroundColor = color;
+                            Console.Write(status);
+                            Console.ResetColor();
+
+                            pErr++;
+                        }
+                    }
+                    catch (PingException pex)
+                    {
+                        status = string.Concat("Erro - ", pex.Message);
+                        color = ConsoleColor.Red;
+
+                        Console.ForegroundColor = color;
+                        Console.Write(status);
+                        Console.ResetColor();
+
+                        pErr++;
+                    }
+                    finally 
+                    {
+                        pinger.Dispose();
+                    }
+
+                    Console.Write("\r\n");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write(ex.Message);
+                Console.ResetColor();
+
+                pErr = 1;
+
+                Console.Write("\r\n");
+            }
         }
     }
 }
