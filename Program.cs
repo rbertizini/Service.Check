@@ -134,6 +134,8 @@ namespace Service.Check
                     int tpErr = 0;
                     checkPing(info[1], info[2], out tpSuc, out tpErr);
 
+                    gTot = gTot - 1;
+                    gTot = gTot + tpSuc + tpErr;
                     pTot = pTot + tpSuc + tpErr;
                     pSuc += tpSuc;
                     pErr += tpErr;
@@ -163,7 +165,7 @@ namespace Service.Check
             Console.ResetColor();
             Console.Write("Total de serviços com sucesso: ");
             if (sTot > sSuc)
-                Console.ForegroundColor = ConsoleColor.Red;
+                Console.ForegroundColor = ConsoleColor.Yellow;
             else
                 Console.ForegroundColor = ConsoleColor.Green;
             Console.Write(sSuc);
@@ -187,7 +189,7 @@ namespace Service.Check
             Console.ResetColor();
             Console.Write("Total de websites com sucesso: ");
             if (wTot > wSuc)
-                Console.ForegroundColor = ConsoleColor.Red;
+                Console.ForegroundColor = ConsoleColor.Yellow;
             else
                 Console.ForegroundColor = ConsoleColor.Green;
             Console.Write(wSuc);
@@ -211,7 +213,7 @@ namespace Service.Check
             Console.ResetColor();
             Console.Write("Total de pings com sucesso: ");
             if (pTot > pSuc)
-                Console.ForegroundColor = ConsoleColor.Red;
+                Console.ForegroundColor = ConsoleColor.Yellow;
             else
                 Console.ForegroundColor = ConsoleColor.Green;
             Console.Write(pSuc);
@@ -265,6 +267,8 @@ namespace Service.Check
                         Console.ResetColor();
 
                         wSuc = 1;
+
+                        response.Dispose();
                     }
                 }
                 catch (WebException wex)
@@ -277,7 +281,7 @@ namespace Service.Check
                     Console.ResetColor();
 
                     wErr = 1;
-                }
+                }                
             }
             catch (Exception ex)
             {
@@ -342,6 +346,8 @@ namespace Service.Check
                 Console.ResetColor();
 
                 sSuc = 1;
+
+                sc.Dispose();
             }
             catch (Exception ex)
             {
