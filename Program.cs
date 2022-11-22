@@ -36,7 +36,10 @@ namespace Service.Check
             Console.WriteLine("-----------------------------------");
             Console.WriteLine("");
 
-            //Verificando se a VPN está ativa - se não estive, liga
+            //Verificando VPN
+            bool vpnOn = false;
+            
+            //Verificando se a OpenVPN GUI
             if (Process.GetProcessesByName("openvpn-gui").Length <= 0)
             {
                 if (File.Exists("C:\\Program Files\\OpenVPN\\bin\\openvpn-gui.exe"))
@@ -52,15 +55,43 @@ namespace Service.Check
 
                     //Aguarda 5 segundos para estabilização
                     Thread.Sleep(12000);
-                }
-                else
+                    vpnOn = true;
+                }                
+            }
+
+            //Verificando se a OpenVPN Connect
+            if (vpnOn == false)
+            {
+                if (File.Exists("C:\\Program Files\\OpenVPN Connect\\OpenVPNConnect.exe"))
                 {
-                    Console.WriteLine("> OpenVPN-GUI não localizada");
+                    Console.WriteLine("> Iniciando e conectando VPN LKM");
+                    Console.WriteLine("");
+
+                    int tSuc = 0;
+                    int tErr = 0;
+                    checkPing("192.168.197.29", "1", out tSuc, out tErr, true);
+                    if (tSuc == 0)
+                    {
+
+                        Process p = new Process();
+                        p.StartInfo.FileName = "C:\\Program Files\\OpenVPN Connect\\OpenVPNConnect.exe";
+                        p.StartInfo.WorkingDirectory = @"C:\\Program Files\\OpenVPN Connect\\";
+                        p.StartInfo.Arguments = "";
+                        p.Start();
+
+                        //Aguarda 5 segundos para estabilização
+                        Console.WriteLine("> Após iniciar a conexão VPN, pressione alguma tecla para continuar...");
+                        Console.ReadKey();
+                    }
+
+                    vpnOn = true;
                 }
             }
-            else
+
+            //Verificando se foi conectada alguma VPN
+            if (vpnOn == false)
             {
-                Console.WriteLine("> VPN LKM Conectada");
+                Console.WriteLine("> Confirme o funcionamento de sua VPN");
                 Console.WriteLine("");
             }
 
@@ -361,7 +392,7 @@ namespace Service.Check
             Console.Write("\r\n");
         }
 
-        private static void checkPing(string ip, string qtd, out int pSuc, out int pErr)
+        private static void checkPing(string ip, string qtd, out int pSuc, out int pErr, bool silenMode = false)
         {
             pSuc = 0;
             pErr = 0;
@@ -373,7 +404,8 @@ namespace Service.Check
                 {
                     string item = string.Concat(ip, ": ");
                     Console.ResetColor();
-                    Console.Write(item);
+                    if (!silenMode)
+                        Console.Write(item);
 
                     ConsoleColor color = ConsoleColor.White;
 
@@ -390,7 +422,8 @@ namespace Service.Check
                             color = ConsoleColor.Green;
 
                             Console.ForegroundColor = color;
-                            Console.Write(status);
+                            if (!silenMode)
+                                Console.Write(status);
                             Console.ResetColor();
 
                             pSuc++;
@@ -401,7 +434,8 @@ namespace Service.Check
                             color = ConsoleColor.Red;
 
                             Console.ForegroundColor = color;
-                            Console.Write(status);
+                            if (!silenMode)
+                                Console.Write(status);
                             Console.ResetColor();
 
                             pErr++;
@@ -413,7 +447,8 @@ namespace Service.Check
                         color = ConsoleColor.Red;
 
                         Console.ForegroundColor = color;
-                        Console.Write(status);
+                        if (!silenMode)
+                            Console.Write(status);
                         Console.ResetColor();
 
                         pErr++;
@@ -423,18 +458,21 @@ namespace Service.Check
                         pinger.Dispose();
                     }
 
-                    Console.Write("\r\n");
+                    if (!silenMode)
+                        Console.Write("\r\n");
                 }
             }
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write(ex.Message);
+                if (!silenMode)
+                    Console.Write(ex.Message);
                 Console.ResetColor();
 
                 pErr = 1;
 
-                Console.Write("\r\n");
+                if (!silenMode)
+                    Console.Write("\r\n");
             }
         }
     }
