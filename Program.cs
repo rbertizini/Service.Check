@@ -79,9 +79,13 @@ namespace Service.Check
                         p.StartInfo.Arguments = "";
                         p.Start();
 
-                        //Aguarda 5 segundos para estabilização
-                        Console.WriteLine("> Após iniciar a conexão VPN, pressione alguma tecla para continuar...");
-                        Console.ReadKey();
+                        //Aguarda conexão manual
+                        Console.WriteLine("> Após iniciar a conexão VPN, pressione enter para continuar...");
+                        while (Console.ReadKey().Key != ConsoleKey.Enter) 
+                        {
+                            Console.WriteLine("> Após iniciar a conexão VPN, pressione enter para continuar...");
+                        }
+                        
                     }
 
                     vpnOn = true;
@@ -345,38 +349,43 @@ namespace Service.Check
                     case ServiceControllerStatus.Stopped:
                         status = "Parado";
                         color = ConsoleColor.Red;
+                        sErr = 1;
                         break;
                     case ServiceControllerStatus.StopPending:
                         status = "Pendente parar";
                         color = ConsoleColor.Yellow;
+                        sErr = 1;
                         break;
                     case ServiceControllerStatus.Running:
                         status = "Executando";
                         color = ConsoleColor.Green;
+                        sSuc = 1;
                         break;
                     case ServiceControllerStatus.ContinuePending:
                         status = "Pendente continuar";
                         color = ConsoleColor.Yellow;
+                        sErr = 1;
                         break;
                     case ServiceControllerStatus.Paused:
                         status = "Pausado";
                         color = ConsoleColor.Red;
+                        sErr = 1;
                         break;
                     case ServiceControllerStatus.PausePending:
                         status = "Pendente pausar";
                         color = ConsoleColor.Yellow;
+                        sErr = 1;
                         break;
                     case ServiceControllerStatus.StartPending:
                         status = "Pendente iniciar";
                         color = ConsoleColor.Yellow;
+                        sErr = 1;
                         break;
                 }
 
                 Console.ForegroundColor = color;
                 Console.Write(status);
                 Console.ResetColor();
-
-                sSuc = 1;
 
                 sc.Dispose();
             }
