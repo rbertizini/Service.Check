@@ -7,6 +7,7 @@ using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
+using System.Security.Policy;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading;
@@ -29,6 +30,9 @@ namespace Service.Check
             int pTot = 0;
             int pSuc = 0;
             int pErr = 0;
+            int mTot = 0;
+            int mSuc = 0;
+            int mErr = 0;
 
             //Apresentação
             Console.WriteLine("-----------------------------------");
@@ -38,7 +42,7 @@ namespace Service.Check
 
             //Verificando VPN
             bool vpnOn = false;
-            
+
             //Verificando se a OpenVPN GUI
             if (Process.GetProcessesByName("openvpn-gui").Length <= 0)
             {
@@ -56,7 +60,7 @@ namespace Service.Check
                     //Aguarda 5 segundos para estabilização
                     Thread.Sleep(12000);
                     vpnOn = true;
-                }                
+                }
             }
 
             //Verificando se a OpenVPN Connect
@@ -81,11 +85,11 @@ namespace Service.Check
 
                         //Aguarda conexão manual
                         Console.WriteLine("> Após iniciar a conexão VPN, pressione enter para continuar...");
-                        while (Console.ReadKey().Key != ConsoleKey.Enter) 
+                        while (Console.ReadKey().Key != ConsoleKey.Enter)
                         {
                             Console.WriteLine("> Após iniciar a conexão VPN, pressione enter para continuar...");
                         }
-                        
+
                     }
 
                     vpnOn = true;
@@ -137,6 +141,7 @@ namespace Service.Check
                 string[] info = line.Split(';');
                 gTot++;
 
+                //Verificação de services
                 if (info[0] == "S")
                 {
                     int tsSuc = 0;
@@ -150,6 +155,7 @@ namespace Service.Check
                     continue;
                 }
 
+                //Verificação de webservices e sites
                 if (info[0] == "W")
                 {
                     int twSuc = 0;
@@ -163,6 +169,7 @@ namespace Service.Check
                     continue;
                 }
 
+                //Verificação de ping
                 if (info[0] == "P")
                 {
                     int tpSuc = 0;
@@ -174,6 +181,22 @@ namespace Service.Check
                     pTot = pTot + tpSuc + tpErr;
                     pSuc += tpSuc;
                     pErr += tpErr;
+
+                    continue;
+                }
+
+                //Processo de movimentação de arquivos - move
+                if (info[0] == "M")
+                {
+                    int tmSuc = 0;
+                    int tmErr = 0;
+                    MoveFile(info[1], info[2], out tmSuc, out tmErr);
+
+                    gTot = gTot - 1;
+                    gTot = gTot + tmSuc + tmErr;
+                    mTot = mTot + tmSuc + tmErr;
+                    mSuc += tmSuc;
+                    mErr += tmErr;
 
                     continue;
                 }
@@ -191,6 +214,7 @@ namespace Service.Check
             Console.Write(gTot);
             Console.Write("\r\n");
 
+            //Serviços
             Console.ResetColor();
             Console.Write("Total de serviços processados: ");
             Console.ForegroundColor = ConsoleColor.Green;
@@ -215,6 +239,7 @@ namespace Service.Check
             Console.Write(sErr);
             Console.Write("\r\n");
 
+            //Webservice e websites
             Console.ResetColor();
             Console.Write("Total de websites processados: ");
             Console.ForegroundColor = ConsoleColor.Green;
@@ -239,6 +264,7 @@ namespace Service.Check
             Console.Write(wErr);
             Console.Write("\r\n");
 
+            //Ping
             Console.ResetColor();
             Console.Write("Total de pings processados: ");
             Console.ForegroundColor = ConsoleColor.Green;
@@ -263,6 +289,31 @@ namespace Service.Check
             Console.Write(pErr);
             Console.Write("\r\n");
 
+            //Movimentação de arquivos
+            Console.ResetColor();
+            Console.Write("Total de arquivos movidos: ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(mTot);
+            Console.Write("\r\n");
+
+            Console.ResetColor();
+            Console.Write("Total de arquivos movidos com sucesso: ");
+            if (mTot > mSuc)
+                Console.ForegroundColor = ConsoleColor.Yellow;
+            else
+                Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(mSuc);
+            Console.Write("\r\n");
+
+            Console.ResetColor();
+            Console.Write("Total de arquivos movidos com erro: ");
+            if (wErr > 0)
+                Console.ForegroundColor = ConsoleColor.Red;
+            else
+                Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(mErr);
+            Console.Write("\r\n");
+
             //Finalização
             Console.ResetColor();
             Console.WriteLine("");
@@ -271,6 +322,67 @@ namespace Service.Check
             Console.WriteLine("-----------------------------------");
 
             Console.ReadKey();
+        }
+
+        private static void MoveFile(string dirOrig, string dirDest, out int mSuc, out int mErr)
+        {
+            Console.ResetColor();
+            Console.WriteLine(string.Concat("Dir. Origem: ", dirOrig));
+
+            Console.ResetColor();
+            Console.WriteLine(string.Concat("Dir. Destino: ", dirDest));
+
+            mSuc = 0;
+            mErr = 0;
+
+            string status = string.Empty;
+            ConsoleColor color = ConsoleColor.White;
+            try
+            {
+                var files = from file in Directory.EnumerateFiles(dirOrig) select file;
+                foreach (var file in files)
+                {
+                    try
+                    {
+                        File.Move(file, Path.Combine(dirDest, Path.GetFileName(file)));
+
+                        Console.ResetColor();
+                        Console.Write("Arquivo: ");
+
+                        color = ConsoleColor.Green;
+                        Console.ForegroundColor = color;
+                        Console.Write(Path.GetFileName(file));
+                        Console.ResetColor();
+
+                        mSuc++;
+                    }
+                    catch (Exception mex)
+                    {
+                        Console.ResetColor();
+                        Console.Write("Arquivo: ");
+
+                        status = string.Concat("Erro - ", mex.Message);
+                        color = ConsoleColor.Red;
+
+                        Console.ForegroundColor = color;
+                        Console.Write(status);
+                        Console.ResetColor();
+
+                        mErr++;
+                    }
+
+                    Console.Write("\r\n");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write(ex.Message);
+                Console.ResetColor();
+
+                mErr = 1;
+            }
+
         }
 
         public static void checkWeb(string url, out int wSuc, out int wErr)
@@ -316,7 +428,7 @@ namespace Service.Check
                     Console.ResetColor();
 
                     wErr = 1;
-                }                
+                }
             }
             catch (Exception ex)
             {
@@ -409,7 +521,7 @@ namespace Service.Check
             string status = string.Empty;
             try
             {
-                for (int i=0; i<Int32.Parse(qtd); i++)
+                for (int i = 0; i < Int32.Parse(qtd); i++)
                 {
                     string item = string.Concat(ip, ": ");
                     Console.ResetColor();
@@ -462,7 +574,7 @@ namespace Service.Check
 
                         pErr++;
                     }
-                    finally 
+                    finally
                     {
                         pinger.Dispose();
                     }
