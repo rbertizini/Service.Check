@@ -307,7 +307,7 @@ namespace Service.Check
 
             Console.ResetColor();
             Console.Write("Total de arquivos movidos com erro: ");
-            if (wErr > 0)
+            if (mErr > 0)
                 Console.ForegroundColor = ConsoleColor.Red;
             else
                 Console.ForegroundColor = ConsoleColor.Green;
