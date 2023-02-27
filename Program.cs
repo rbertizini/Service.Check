@@ -402,32 +402,38 @@ namespace Service.Check
                 request.Timeout = 5000;
                 request.AllowAutoRedirect = true;
                 request.Method = "GET";
-                try
-                {
-                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                
+                //Criando loop de validação - force
+                for (int i = 0;i <= 2; i++)
+                { 
+                    try
                     {
-                        status = response.StatusCode.ToString();
-                        color = ConsoleColor.Green;
+                        using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                        {
+                            status = response.StatusCode.ToString();
+                            color = ConsoleColor.Green;
+
+                            Console.ForegroundColor = color;
+                            Console.Write(status);
+                            Console.ResetColor();
+
+                            wSuc = 1;
+
+                            response.Dispose();
+                            break;
+                        }
+                    }
+                    catch (WebException wex)
+                    {
+                        status = string.Format("Erro (tent {0}) - {1}", i, wex.Message);
+                        color = ConsoleColor.Red;
 
                         Console.ForegroundColor = color;
                         Console.Write(status);
                         Console.ResetColor();
 
-                        wSuc = 1;
-
-                        response.Dispose();
+                        wErr = 1;
                     }
-                }
-                catch (WebException wex)
-                {
-                    status = string.Concat("Erro - ", wex.Message);
-                    color = ConsoleColor.Red;
-
-                    Console.ForegroundColor = color;
-                    Console.Write(status);
-                    Console.ResetColor();
-
-                    wErr = 1;
                 }
             }
             catch (Exception ex)
