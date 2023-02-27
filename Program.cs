@@ -431,6 +431,10 @@ namespace Service.Check
                         Console.ForegroundColor = color;
                         Console.Write(status);
                         Console.ResetColor();
+                        
+                        //Qeubra de linha para os textos
+                        if (i < 2)
+                            Console.Write("\r\n");
 
                         wErr = 1;
                     }
