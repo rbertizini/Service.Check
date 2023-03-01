@@ -425,7 +425,7 @@ namespace Service.Check
                     }
                     catch (WebException wex)
                     {
-                        status = string.Format("Erro (tent {0}) - {1}", i, wex.Message);
+                        status = string.Format("Erro (tent {0}) - {1}", (i+1), wex.Message);
                         color = ConsoleColor.Red;
 
                         Console.ForegroundColor = color;
@@ -437,6 +437,7 @@ namespace Service.Check
                             Console.Write("\r\n");
 
                         wErr = 1;
+                        Thread.Sleep(2000);
                     }
                 }
             }
