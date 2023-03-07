@@ -146,7 +146,7 @@ namespace Service.Check
                 {
                     int tsSuc = 0;
                     int tsErr = 0;
-                    checkService(info[1], info[2], out tsSuc, out tsErr);
+                    checkService(info[1], info[2], info[3], out tsSuc, out tsErr);
 
                     sTot++;
                     sSuc += tsSuc;
@@ -377,7 +377,7 @@ namespace Service.Check
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write(ex.Message);
+                Console.Write(string.Concat(" ! " + ex.Message));
                 Console.ResetColor();
 
                 mErr = 1;
@@ -444,7 +444,7 @@ namespace Service.Check
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write(ex.Message);
+                Console.Write(string.Concat(" ! " + ex.Message));
                 Console.ResetColor();
 
                 wErr = 1;
@@ -453,7 +453,7 @@ namespace Service.Check
             Console.Write("\r\n");
         }
 
-        private static void checkService(string ip, string serv, out int sSuc, out int sErr)
+        private static void checkService(string ip, string serv, string force, out int sSuc, out int sErr, bool recheck = false)
         {
             string item = string.Concat(ip, " - ", serv, ": ");
             Console.ResetColor();
@@ -510,12 +510,55 @@ namespace Service.Check
                 Console.Write(status);
                 Console.ResetColor();
 
+
+                //Iniciando serviço
+                if ((force == "S") && (sc.Status != ServiceControllerStatus.Running) && (!recheck))
+                {
+                    var statusOld = sc.Status;
+
+                    Console.Write("\r\n");
+                    Console.ResetColor();
+                    Console.Write(item);
+
+                    status = "Iniciando serviço";
+                    color = ConsoleColor.Yellow;
+                    Console.ForegroundColor = color;
+                    Console.Write(status);
+                    Console.ResetColor();
+                    Console.Write("\r\n");
+
+                    try 
+                    {
+                        sc.Stop();
+                    }
+                    catch { }
+
+                    sc.Start();
+ 
+                    int countStart = 0;
+                    while (countStart < 30) 
+                    { 
+                        if (sc.Status != ServiceControllerStatus.Running)
+                        {
+                            countStart++;
+                            Thread.Sleep(1000);
+                        }
+                        else 
+                        {
+                            break;
+                        }
+                    }
+                    
+                    //Reverificação
+                    checkService(ip, serv, force, out sSuc, out sErr, true);
+                }
+
                 sc.Dispose();
             }
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write(ex.Message);
+                Console.Write(string.Concat(" ! " + ex.Message));
                 Console.ResetColor();
 
                 sErr = 1;
@@ -598,7 +641,7 @@ namespace Service.Check
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 if (!silenMode)
-                    Console.Write(ex.Message);
+                    Console.Write(string.Concat(" ! " + ex.Message));
                 Console.ResetColor();
 
                 pErr = 1;
