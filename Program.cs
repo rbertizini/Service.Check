@@ -525,7 +525,7 @@ namespace Service.Check
                     Console.ForegroundColor = color;
                     Console.Write(status);
                     Console.ResetColor();
-                    Console.Write("\r\n");
+                    //Console.Write("\r\n");
 
                     try 
                     {
