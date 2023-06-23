@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Management;
@@ -33,6 +34,10 @@ namespace Service.Check
             int mTot = 0;
             int mSuc = 0;
             int mErr = 0;
+            int cTot = 0;
+            int cSuc = 0;
+            int cErr = 0;
+            int cNExc = 0;
 
             //Apresentação
             Console.WriteLine("-----------------------------------");
@@ -189,7 +194,8 @@ namespace Service.Check
                 if (info[0] == "M")
                 {
                     int tmSuc = 0;
-                    int tmErr = 0;
+                    int tmErr = 0;                    
+
                     MoveFile(info[1], info[2], out tmSuc, out tmErr);
 
                     gTot = gTot - 1;
@@ -197,6 +203,45 @@ namespace Service.Check
                     mTot = mTot + tmSuc + tmErr;
                     mSuc += tmSuc;
                     mErr += tmErr;
+
+                    continue;
+                }
+
+                //Processo de copia de arquivos - copy
+                if (info[0] == "C")
+                {
+                    int tcSuc = 0;
+                    int tcErr = 0;
+                    int tcNExc = 0;
+
+                    if (info.Length == 4)
+                    {
+                        if (info[3] != null)
+                        {
+                            DateTime dtLim = DateTime.Parse(info[3]);
+                            if (dtLim <= DateTime.Now)
+                            {
+                                Console.ResetColor();
+                                Console.Write("C-Dir. Origem (Período excedido): ");
+
+                                Console.ForegroundColor = ConsoleColor.Yellow; ;
+                                Console.Write(info[1]);
+                                Console.ResetColor();
+                                Console.Write("\r\n");
+
+                                continue;
+                            }
+                        }
+                    }
+
+                    CopyFile(info[1], info[2], out tcSuc, out tcErr, out tcNExc);
+
+                    gTot = gTot - 1;
+                    gTot = gTot + tcSuc + tcErr + tcNExc;
+                    cTot = cTot + tcSuc + tcErr + tcNExc;
+                    cSuc += tcSuc;
+                    cErr += tcErr;
+                    cNExc += tcNExc;
 
                     continue;
                 }
@@ -314,6 +359,40 @@ namespace Service.Check
             Console.Write(mErr);
             Console.Write("\r\n");
 
+            //Cópia de arquivos
+            Console.ResetColor();
+            Console.Write("Total de arquivos copiados: ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(cTot);
+            Console.Write("\r\n");
+
+            Console.ResetColor();
+            Console.Write("Total de arquivos copiados com sucesso: ");
+            if (cTot > cSuc)
+                Console.ForegroundColor = ConsoleColor.Yellow;
+            else
+                Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(cSuc);
+            Console.Write("\r\n");
+
+            Console.ResetColor();
+            Console.Write("Total de arquivos copiados com erro: ");
+            if (cErr > 0)
+                Console.ForegroundColor = ConsoleColor.Red;
+            else
+                Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(cErr);
+            Console.Write("\r\n");
+
+            Console.ResetColor();
+            Console.Write("Total de arquivos copiados já existentes (não copiados): ");
+            if (cNExc > 0)
+                Console.ForegroundColor = ConsoleColor.Yellow;
+            else
+                Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(cNExc);
+            Console.Write("\r\n");
+
             //Finalização
             Console.ResetColor();
             Console.WriteLine("");
@@ -327,10 +406,10 @@ namespace Service.Check
         private static void MoveFile(string dirOrig, string dirDest, out int mSuc, out int mErr)
         {
             Console.ResetColor();
-            Console.WriteLine(string.Concat("Dir. Origem: ", dirOrig));
+            Console.WriteLine(string.Concat("M-Dir. Origem: ", dirOrig));
 
             Console.ResetColor();
-            Console.WriteLine(string.Concat("Dir. Destino: ", dirDest));
+            Console.WriteLine(string.Concat("M-Dir. Destino: ", dirDest));
 
             mSuc = 0;
             mErr = 0;
@@ -347,7 +426,7 @@ namespace Service.Check
                         File.Move(file, Path.Combine(dirDest, Path.GetFileName(file)));
 
                         Console.ResetColor();
-                        Console.Write("Arquivo: ");
+                        Console.Write("M-Arquivo: ");
 
                         color = ConsoleColor.Green;
                         Console.ForegroundColor = color;
@@ -359,7 +438,7 @@ namespace Service.Check
                     catch (Exception mex)
                     {
                         Console.ResetColor();
-                        Console.Write("Arquivo: ");
+                        Console.Write("M-Arquivo: ");
 
                         status = string.Concat("Erro - ", mex.Message);
                         color = ConsoleColor.Red;
@@ -385,9 +464,86 @@ namespace Service.Check
 
         }
 
+        private static void CopyFile(string dirOrig, string dirDest, out int cSuc, out int cErr, out int cNExc)
+        {
+            Console.ResetColor();
+            Console.WriteLine(string.Concat("C-Dir. Origem: ", dirOrig));
+
+            Console.ResetColor();
+            Console.WriteLine(string.Concat("C-Dir. Destino: ", dirDest));
+
+            cSuc = 0;
+            cErr = 0;
+            cNExc = 0;
+
+            string status = string.Empty;
+            ConsoleColor color = ConsoleColor.White;
+            try
+            {
+                var files = from file in Directory.EnumerateFiles(dirOrig) select file;
+                foreach (var file in files)
+                {
+                    try
+                    {
+                        if (!File.Exists(Path.Combine(dirDest, Path.GetFileName(file))))
+                        {
+                            File.Copy(file, Path.Combine(dirDest, Path.GetFileName(file)));
+
+                            Console.ResetColor();
+                            Console.Write("C-Arquivo: ");
+
+                            color = ConsoleColor.Green;
+                            Console.ForegroundColor = color;
+                            Console.Write(Path.GetFileName(file));
+                            Console.ResetColor();
+
+                            cSuc++;
+                        }
+                        else
+                        {
+                            Console.ResetColor();
+                            Console.Write("C-Arquivo existente: ");
+
+                            color = ConsoleColor.Yellow;
+                            Console.ForegroundColor = color;
+                            Console.Write(Path.GetFileName(file));
+                            Console.ResetColor();
+
+                            cNExc++;
+                        }
+                    }
+                    catch (Exception mex)
+                    {
+                        Console.ResetColor();
+                        Console.Write("C-Arquivo: ");
+
+                        status = string.Concat("Erro - ", mex.Message);
+                        color = ConsoleColor.Red;
+
+                        Console.ForegroundColor = color;
+                        Console.Write(status);
+                        Console.ResetColor();
+
+                        cErr++;
+                    }
+
+                    Console.Write("\r\n");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write(string.Concat(" ! " + ex.Message));
+                Console.ResetColor();
+
+                cErr = 1;
+            }
+
+        }
+
         public static void checkWeb(string url, out int wSuc, out int wErr)
         {
-            string item = string.Concat(url, ": ");
+            string item = string.Concat("W-", url, ": ");
             Console.ResetColor();
             Console.Write(item);
 
@@ -425,7 +581,7 @@ namespace Service.Check
                     }
                     catch (WebException wex)
                     {
-                        status = string.Format("Erro (tent {0}) - {1}", (i+1), wex.Message);
+                        status = string.Format("W-Erro (tent {0}) - {1}", (i+1), wex.Message);
                         color = ConsoleColor.Red;
 
                         Console.ForegroundColor = color;
@@ -455,7 +611,7 @@ namespace Service.Check
 
         private static void checkService(string ip, string serv, string force, out int sSuc, out int sErr, bool recheck = false)
         {
-            string item = string.Concat(ip, " - ", serv, ": ");
+            string item = string.Concat("S-", ip, " - ", serv, ": ");
             Console.ResetColor();
             Console.Write(item);
 
@@ -520,7 +676,7 @@ namespace Service.Check
                     Console.ResetColor();
                     Console.Write(item);
 
-                    status = "Iniciando serviço";
+                    status = "S-Iniciando serviço";
                     color = ConsoleColor.Yellow;
                     Console.ForegroundColor = color;
                     Console.Write(status);
@@ -577,7 +733,7 @@ namespace Service.Check
             {
                 for (int i = 0; i < Int32.Parse(qtd); i++)
                 {
-                    string item = string.Concat(ip, ": ");
+                    string item = string.Concat("P-",ip, ": ");
                     Console.ResetColor();
                     if (!silenMode)
                         Console.Write(item);
@@ -605,7 +761,7 @@ namespace Service.Check
                         }
                         else
                         {
-                            status = string.Concat("Erro - ", resp.Status.ToString());
+                            status = string.Concat("P-Erro - ", resp.Status.ToString());
                             color = ConsoleColor.Red;
 
                             Console.ForegroundColor = color;
@@ -618,7 +774,7 @@ namespace Service.Check
                     }
                     catch (PingException pex)
                     {
-                        status = string.Concat("Erro - ", pex.Message);
+                        status = string.Concat("P-Erro - ", pex.Message);
                         color = ConsoleColor.Red;
 
                         Console.ForegroundColor = color;
