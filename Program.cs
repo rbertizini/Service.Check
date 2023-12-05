@@ -245,6 +245,14 @@ namespace Service.Check
 
                     continue;
                 }
+
+                //Contagem e tamanho de diretório
+                if (info[0] == "Q")
+                {   
+                    checkCount(info[1], info[2]);
+
+                    continue;
+                }
             }
 
             //Resumo
@@ -402,7 +410,7 @@ namespace Service.Check
 
             Console.ReadKey();
         }
-
+        
         private static void MoveFile(string dirOrig, string dirDest, out int mSuc, out int mErr)
         {
             Console.ResetColor();
@@ -804,6 +812,59 @@ namespace Service.Check
 
                 if (!silenMode)
                     Console.Write("\r\n");
+            }
+        }
+
+        private static void checkCount(string dirBase, string subDir)
+        {
+            //Contando arquivos por diretório
+            string pathIni = dirBase;
+
+            Console.ResetColor();            
+            Console.Write(string.Format("Diretório base: {0}", pathIni));            
+            Console.Write("\r\n");
+
+            string[] filesindirectory = Directory.GetDirectories(dirBase);
+            foreach (string subdir in filesindirectory)
+            {
+                int countFiles = 0;
+                long sizeFiles = 0;
+
+                //Obtendo tamnanho do diretório
+                DirectoryInfo dirInfo = new DirectoryInfo(subdir);
+
+                long size = 0;                
+                FileInfo[] fis = dirInfo.GetFiles();
+                foreach (FileInfo fi in fis)
+                {
+                    countFiles++;
+                    size += fi.Length;
+                }
+
+                double sizeMb = size / 1024 / 1024;
+                ConsoleColor color = ConsoleColor.White;
+                Console.ResetColor();
+                Console.Write(string.Format("Q-{0} - qtd: ", dirInfo.Name));
+
+                if (countFiles == 0)
+                    color = ConsoleColor.Green;
+                else
+                    if (countFiles < 50)
+                        color = ConsoleColor.Yellow;
+                    else
+                        color = ConsoleColor.Red;
+
+                Console.ForegroundColor = color;
+                Console.Write(countFiles);
+                Console.ResetColor();
+                                
+                Console.Write(" - tmh(Mb): ");
+                                
+                Console.ForegroundColor = color;
+                Console.Write(string.Format("{0:N2}", sizeMb));
+                Console.ResetColor();
+
+                Console.Write("\r\n");
             }
         }
     }

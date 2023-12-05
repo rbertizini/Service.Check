@@ -10,11 +10,8 @@ P;192.168.197.46;5
 #Copiar arquivos
 #C + sep + diretório origem + sep + diretório destino + data limite (opcional)
 C;\\192.168.197.22\d$\WebApp\LKM ARDFe OCR Async\PRD\Arquivos\02 disponibilizado\TAKEDA;\\192.168.197.22\d$\WebApp\LKM ARDFe OCR Async\QAS\Arquivos\02 disponibilizado\TAKEDA;31/12/2023
-C;\\192.168.197.22\d$\WebApp\LKM ARDFe OCR Async\PRD\Arquivos\02 disponibilizado\SARAH;\\192.168.197.22\d$\WebApp\LKM ARDFe OCR Async\QAS\Arquivos\02 disponibilizado\SARAH;31/12/2023
-C;\\192.168.197.22\d$\WebApp\LKM ARDFe OCR Async\PRD\Arquivos\02 disponibilizado\NOVAAGRI;\\192.168.197.22\d$\WebApp\LKM ARDFe OCR Async\QAS\Arquivos\02 disponibilizado\NOVAAGRI;31/12/2023
-C;\\192.168.197.22\d$\WebApp\LKM ARDFe OCR Async\PRD\Arquivos\02 disponibilizado\SUPERA RX;\\192.168.197.22\d$\WebApp\LKM ARDFe OCR Async\QAS\Arquivos\02 disponibilizado\SUPERA RX;31/12/2023
-C;\\192.168.197.22\d$\WebApp\LKM ARDFe OCR Async\PRD\Arquivos\02 disponibilizado\GREAT WALL;\\192.168.197.22\d$\WebApp\LKM ARDFe OCR Async\QAS\Arquivos\02 disponibilizado\GREAT WALL;31/12/2023
-C;\\192.168.197.22\d$\WebApp\LKM ARDFe OCR Async\PRD\Arquivos\02 disponibilizado\OUROFINO Q;\\192.168.197.22\d$\WebApp\LKM ARDFe OCR Async\QAS\Arquivos\02 disponibilizado\OUROFINO Q;31/12/2023
+C;\\192.168.197.22\d$\WebApp\LKM ARDFe OCR Async\PRD\Arquivos\02 disponibilizado\SINAGRO;\\192.168.197.22\d$\WebApp\LKM ARDFe OCR Async\QAS\Arquivos\02 disponibilizado\SINAGRO;31/12/2023
+C;\\192.168.197.22\d$\WebApp\LKM ARDFe OCR Async\PRD\Arquivos\02 disponibilizado\RICHEMONT;\\192.168.197.22\d$\WebApp\LKM ARDFe OCR Async\QAS\Arquivos\02 disponibilizado\RICHEMONT;31/12/2023
 #Verificar sites\webservices\webapis
 #W + sep + url
 W;https://www.lkm.com.br
@@ -62,7 +59,5 @@ S;192.168.197.22;lkm_nddclass_prd;S
 S;192.168.197.22;lkv_ocr_prd_check;S
 S;192.168.197.22;lkv_ocr_qas_check;S
 S;192.168.197.46;postgresql-x64-14;S
-S;192.168.197.46;lkm_deepthinker_busqas;S
+S;192.168.197.46;lkm_deepthinker_busqas;N
 S;192.168.197.46;LKM NOVO Extrator - DeepThinker;S
-#Contar arquivos e tamanho + processamento de subdiretórios
-Q;\\192.168.197.22\d$\WebApp\LKM ARDFe OCR Async\PRD\Arquivos\02 disponibilizado\;S
