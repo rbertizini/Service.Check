@@ -833,12 +833,16 @@ namespace Service.Check
                 //Obtendo tamnanho do diretório
                 DirectoryInfo dirInfo = new DirectoryInfo(subdir);
 
-                long size = 0;                
+                long size = 0;  
+                DateTime dtUlt = DateTime.Now;
                 FileInfo[] fis = dirInfo.GetFiles();
                 foreach (FileInfo fi in fis)
                 {
                     countFiles++;
                     size += fi.Length;
+
+                    if (fi.CreationTime < dtUlt)
+                        dtUlt = fi.CreationTime;
                 }
 
                 double sizeMb = size / 1024 / 1024;
@@ -846,13 +850,13 @@ namespace Service.Check
                 Console.ResetColor();
                 Console.Write(string.Format("Q-{0} - qtd: ", dirInfo.Name));
 
-                if (countFiles == 0)
-                    color = ConsoleColor.Green;
+                if (dtUlt < (DateTime.Now.AddDays(-14)))
+                    color = ConsoleColor.Red;
                 else
-                    if (countFiles < 50)
+                    if (dtUlt < (DateTime.Now.AddDays(-7)))
                         color = ConsoleColor.Yellow;
                     else
-                        color = ConsoleColor.Red;
+                        color = ConsoleColor.Green;                    
 
                 Console.ForegroundColor = color;
                 Console.Write(countFiles);
@@ -862,6 +866,12 @@ namespace Service.Check
                                 
                 Console.ForegroundColor = color;
                 Console.Write(string.Format("{0:N2}", sizeMb));
+                Console.ResetColor();
+
+                Console.Write(" - Dt: ");
+
+                Console.ForegroundColor = color;
+                Console.Write(dtUlt.ToString("dd/MM/yyyy"));
                 Console.ResetColor();
 
                 Console.Write("\r\n");
