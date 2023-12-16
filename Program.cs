@@ -491,6 +491,8 @@ namespace Service.Check
                 var files = from file in Directory.EnumerateFiles(dirOrig) select file;
                 foreach (var file in files)
                 {
+                    bool noText = false;
+                    
                     try
                     {
                         if (!File.Exists(Path.Combine(dirDest, Path.GetFileName(file))))
@@ -517,6 +519,7 @@ namespace Service.Check
                             //Console.ForegroundColor = color;
                             //Console.Write(Path.GetFileName(file));
                             //Console.ResetColor();
+                            noText = true;
 
                             cNExc++;
                         }
@@ -536,7 +539,8 @@ namespace Service.Check
                         cErr++;
                     }
 
-                    Console.Write("\r\n");
+                    if (!noText)
+                        Console.Write("\r\n");
                 }
             }
             catch (Exception ex)
