@@ -509,13 +509,14 @@ namespace Service.Check
                         }
                         else
                         {
-                            Console.ResetColor();
-                            Console.Write("C-Arquivo existente: ");
+                            //Desativado processo de exibição de arquivo já existente
+                            //Console.ResetColor();
+                            //Console.Write("C-Arquivo existente: ");
 
-                            color = ConsoleColor.Yellow;
-                            Console.ForegroundColor = color;
-                            Console.Write(Path.GetFileName(file));
-                            Console.ResetColor();
+                            //color = ConsoleColor.Yellow;
+                            //Console.ForegroundColor = color;
+                            //Console.Write(Path.GetFileName(file));
+                            //Console.ResetColor();
 
                             cNExc++;
                         }
