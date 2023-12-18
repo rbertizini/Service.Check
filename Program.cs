@@ -733,7 +733,8 @@ namespace Service.Check
                 sErr = 1;
             }
 
-            Console.Write("\r\n");
+            if (!recheck)
+                Console.Write("\r\n");
         }
 
         private static void checkPing(string ip, string qtd, out int pSuc, out int pErr, bool silenMode = false)
