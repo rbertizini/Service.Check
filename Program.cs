@@ -38,6 +38,10 @@ namespace Service.Check
             int cSuc = 0;
             int cErr = 0;
             int cNExc = 0;
+            int dTot = 0;
+            int dSuc = 0;
+            int dErr = 0;
+            int dNExc = 0;
 
             //Apresentação
             Console.WriteLine("-----------------------------------");
@@ -246,6 +250,45 @@ namespace Service.Check
                     continue;
                 }
 
+                //Processo de copia de diretório
+                if (info[0] == "D")
+                {
+                    int tdSuc = 0;
+                    int tdErr = 0;
+                    int tdNExc = 0;
+
+                    if (info.Length == 4)
+                    {
+                        if (info[3] != null)
+                        {
+                            DateTime dtLim = DateTime.Parse(info[3]);
+                            if (dtLim <= DateTime.Now)
+                            {
+                                Console.ResetColor();
+                                Console.Write("X-Dir. Origem (Período excedido): ");
+
+                                Console.ForegroundColor = ConsoleColor.Yellow; ;
+                                Console.Write(info[1]);
+                                Console.ResetColor();
+                                Console.Write("\r\n");
+
+                                continue;
+                            }
+                        }
+                    }
+
+                    CopyDir(info[1], info[2], out tdSuc, out tdErr, out tdNExc);
+
+                    gTot = gTot - 1;
+                    gTot = gTot + tdSuc + tdErr + tdNExc;
+                    dTot = dTot + tdSuc + tdErr + tdNExc;
+                    dSuc += tdSuc;
+                    dErr += tdErr;
+                    dNExc += tdNExc;
+
+                    continue;
+                }
+
                 //Contagem e tamanho de diretório
                 if (info[0] == "Q")
                 {   
@@ -401,6 +444,40 @@ namespace Service.Check
             Console.Write(cNExc);
             Console.Write("\r\n");
 
+            //Cópia de diretório
+            Console.ResetColor();
+            Console.Write("Total de arquivos copiados: ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(dTot);
+            Console.Write("\r\n");
+
+            Console.ResetColor();
+            Console.Write("Total de arquivos copiados com sucesso: ");
+            if (dTot > dSuc)
+                Console.ForegroundColor = ConsoleColor.Yellow;
+            else
+                Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(dSuc);
+            Console.Write("\r\n");
+
+            Console.ResetColor();
+            Console.Write("Total de arquivos copiados com erro: ");
+            if (dErr > 0)
+                Console.ForegroundColor = ConsoleColor.Red;
+            else
+                Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(dErr);
+            Console.Write("\r\n");
+
+            Console.ResetColor();
+            Console.Write("Total de arquivos copiados já existentes (não copiados): ");
+            if (dNExc > 0)
+                Console.ForegroundColor = ConsoleColor.Yellow;
+            else
+                Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(dNExc);
+            Console.Write("\r\n");
+
             //Finalização
             Console.ResetColor();
             Console.WriteLine("");
@@ -552,6 +629,113 @@ namespace Service.Check
                 cErr = 1;
             }
 
+        }
+
+        private static void CopyDir(string dirOrig, string dirDest, out int dSuc, out int dErr, out int dNExc)
+        {
+            Console.ResetColor();
+            Console.WriteLine(string.Concat("D-Dir. Origem: ", dirOrig));
+
+            Console.ResetColor();
+            Console.WriteLine(string.Concat("D-Dir. Destino: ", dirDest));
+
+            dSuc = 0;
+            dErr = 0;
+            dNExc = 0;
+
+            string status = string.Empty;
+            ConsoleColor color = ConsoleColor.White;
+            try
+            {
+                //Processando a partir do diretório de origem
+                var dirs = Directory.GetDirectories(dirOrig, "*", SearchOption.AllDirectories);
+                foreach (string dir in dirs)
+                {
+                    //Verificando existência em destino
+                    var sDir = new DirectoryInfo(dir).Name;
+                    if (!Directory.Exists(Path.Combine(dirDest, sDir)))
+                        Directory.CreateDirectory(Path.Combine(dirDest, sDir));
+    
+                    //Cópia de arquivos
+                    var files = from file in Directory.EnumerateFiles(dir) select file;
+
+                    //Informação de diretório atual
+                    if (files.Count() > 0)
+                    {
+                        Console.ResetColor();
+                        Console.Write("D-Diretório: ");
+
+                        color = ConsoleColor.Green;
+                        Console.ForegroundColor = color;
+                        Console.Write(sDir);
+                        Console.ResetColor();
+                        Console.Write("\r\n");
+                    }
+                    
+                    //Cópia
+                    foreach (var file in files)
+                    {
+                        bool noText = false;
+
+                        try
+                        {
+                            if (!File.Exists(Path.Combine(dirDest, Path.GetFileName(file))))
+                            {
+                                File.Copy(file, Path.Combine(dirDest, Path.GetFileName(file)));
+
+                                Console.ResetColor();
+                                Console.Write("D-Arquivo: ");
+
+                                color = ConsoleColor.Green;
+                                Console.ForegroundColor = color;
+                                Console.Write(Path.GetFileName(file));
+                                Console.ResetColor();
+
+                                dSuc++;
+                            }
+                            else
+                            {
+                                //Desativado processo de exibição de arquivo já existente
+                                //Console.ResetColor();
+                                //Console.Write("C-Arquivo existente: ");
+
+                                //color = ConsoleColor.Yellow;
+                                //Console.ForegroundColor = color;
+                                //Console.Write(Path.GetFileName(file));
+                                //Console.ResetColor();
+                                noText = true;
+
+                                dNExc++;
+                            }
+                        }
+                        catch (Exception mex)
+                        {
+                            Console.ResetColor();
+                            Console.Write("D-Arquivo: ");
+
+                            status = string.Concat("Erro - ", mex.Message);
+                            color = ConsoleColor.Red;
+
+                            Console.ForegroundColor = color;
+                            Console.Write(status);
+                            Console.ResetColor();
+
+                            dErr++;
+                        }
+
+                        if (!noText)
+                            Console.Write("\r\n");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write(string.Concat(" ! " + ex.Message));
+                Console.ResetColor();
+
+                dErr = 1;
+            }
         }
 
         public static void checkWeb(string url, out int wSuc, out int wErr)
