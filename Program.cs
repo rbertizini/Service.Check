@@ -265,7 +265,7 @@ namespace Service.Check
                             if (dtLim <= DateTime.Now)
                             {
                                 Console.ResetColor();
-                                Console.Write("X-Dir. Origem (Período excedido): ");
+                                Console.Write("D-Dir. Origem (Período excedido): ");
 
                                 Console.ForegroundColor = ConsoleColor.Yellow; ;
                                 Console.Write(info[1]);
@@ -653,8 +653,9 @@ namespace Service.Check
                 {
                     //Verificando existência em destino
                     var sDir = new DirectoryInfo(dir).Name;
-                    if (!Directory.Exists(Path.Combine(dirDest, sDir)))
-                        Directory.CreateDirectory(Path.Combine(dirDest, sDir));
+                    var sDirDest = Path.Combine(dirDest, sDir);
+                    if (!Directory.Exists(sDirDest))
+                        Directory.CreateDirectory(sDirDest);
     
                     //Cópia de arquivos
                     var files = from file in Directory.EnumerateFiles(dir) select file;
@@ -679,9 +680,9 @@ namespace Service.Check
 
                         try
                         {
-                            if (!File.Exists(Path.Combine(dirDest, Path.GetFileName(file))))
+                            if (!File.Exists(Path.Combine(sDirDest, Path.GetFileName(file))))
                             {
-                                File.Copy(file, Path.Combine(dirDest, Path.GetFileName(file)));
+                                File.Copy(file, Path.Combine(sDirDest, Path.GetFileName(file)));
 
                                 Console.ResetColor();
                                 Console.Write("D-Arquivo: ");
@@ -1011,7 +1012,7 @@ namespace Service.Check
             string pathIni = dirBase;
 
             Console.ResetColor();            
-            Console.Write(string.Format("Diretório base: {0}", pathIni));            
+            Console.Write(string.Format("Q - Diretório base: {0}", pathIni));            
             Console.Write("\r\n");
 
             string[] filesindirectory = Directory.GetDirectories(dirBase);
