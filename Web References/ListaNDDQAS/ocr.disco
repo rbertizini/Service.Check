@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<discovery xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.xmlsoap.org/disco/">
+  <contractRef ref="http://192.168.197.22/ocr_async_qas/ocr.asmx?wsdl" docRef="http://192.168.197.22/ocr_async_qas/ocr.asmx" xmlns="http://schemas.xmlsoap.org/disco/scl/" />
+  <soap address="http://192.168.197.22/ocr_async_qas/ocr.asmx" xmlns:q1="http://ardfe.lkm.com.br" binding="q1:AR-DFe_x005F_x0020_LKMSoap" xmlns="http://schemas.xmlsoap.org/disco/soap/" />
+  <soap address="http://192.168.197.22/ocr_async_qas/ocr.asmx" xmlns:q2="http://ardfe.lkm.com.br" binding="q2:AR-DFe_x005F_x0020_LKMSoap12" xmlns="http://schemas.xmlsoap.org/disco/soap/" />
+</discovery>

@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="http://ardfe.lkm.com.br" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://ardfe.lkm.com.br" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">AR-DFe LKM - Processamento de OCR para notas fiscais de serviço</wsdl:documentation>
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://ardfe.lkm.com.br">
+      <s:element name="EnviarArquivo">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="arqConteudo" type="s:base64Binary" />
+            <s:element minOccurs="0" maxOccurs="1" name="arqNome" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="arqDiret" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="arqUrl" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="arqEmailRem" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="arqEmailDthr" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="identCliente" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="solicAmb" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="solicOrig" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="EnviarArquivoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="EnviarArquivoResult" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrIni" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrFim" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrDif" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObterLista">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="identCliente" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="solicAmb" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="solicOrig" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObterListaResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ObterListaResult" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrIni" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrFim" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrDif" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObterArquivo">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="arqNome" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="identCliente" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="solicAmb" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="solicOrig" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObterArquivoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ObterArquivoResult" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrIni" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrFim" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrDif" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ConfirmarArquivo">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="arqNome" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="identCliente" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="solicAmb" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="solicOrig" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ConfirmarArquivoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ConfirmarArquivoResult" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrIni" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrFim" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrDif" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObterListaNDD">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="identCliente" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="solicAmb" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="solicOrig" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObterListaNDDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ObterListaNDDResult" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrIni" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrFim" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrDif" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObterArquivoNDD">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="arqNome" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="identCliente" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="solicAmb" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="solicOrig" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObterArquivoNDDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ObterArquivoNDDResult" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrIni" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrFim" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrDif" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ConfirmarArquivoNDD">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="arqNome" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="identCliente" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="solicAmb" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="solicOrig" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ConfirmarArquivoNDDResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ConfirmarArquivoNDDResult" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrIni" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrFim" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="procDthrDif" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="EnviarArquivoSoapIn">
+    <wsdl:part name="parameters" element="tns:EnviarArquivo" />
+  </wsdl:message>
+  <wsdl:message name="EnviarArquivoSoapOut">
+    <wsdl:part name="parameters" element="tns:EnviarArquivoResponse" />
+  </wsdl:message>
+  <wsdl:message name="ObterListaSoapIn">
+    <wsdl:part name="parameters" element="tns:ObterLista" />
+  </wsdl:message>
+  <wsdl:message name="ObterListaSoapOut">
+    <wsdl:part name="parameters" element="tns:ObterListaResponse" />
+  </wsdl:message>
+  <wsdl:message name="ObterArquivoSoapIn">
+    <wsdl:part name="parameters" element="tns:ObterArquivo" />
+  </wsdl:message>
+  <wsdl:message name="ObterArquivoSoapOut">
+    <wsdl:part name="parameters" element="tns:ObterArquivoResponse" />
+  </wsdl:message>
+  <wsdl:message name="ConfirmarArquivoSoapIn">
+    <wsdl:part name="parameters" element="tns:ConfirmarArquivo" />
+  </wsdl:message>
+  <wsdl:message name="ConfirmarArquivoSoapOut">
+    <wsdl:part name="parameters" element="tns:ConfirmarArquivoResponse" />
+  </wsdl:message>
+  <wsdl:message name="ObterListaNDDSoapIn">
+    <wsdl:part name="parameters" element="tns:ObterListaNDD" />
+  </wsdl:message>
+  <wsdl:message name="ObterListaNDDSoapOut">
+    <wsdl:part name="parameters" element="tns:ObterListaNDDResponse" />
+  </wsdl:message>
+  <wsdl:message name="ObterArquivoNDDSoapIn">
+    <wsdl:part name="parameters" element="tns:ObterArquivoNDD" />
+  </wsdl:message>
+  <wsdl:message name="ObterArquivoNDDSoapOut">
+    <wsdl:part name="parameters" element="tns:ObterArquivoNDDResponse" />
+  </wsdl:message>
+  <wsdl:message name="ConfirmarArquivoNDDSoapIn">
+    <wsdl:part name="parameters" element="tns:ConfirmarArquivoNDD" />
+  </wsdl:message>
+  <wsdl:message name="ConfirmarArquivoNDDSoapOut">
+    <wsdl:part name="parameters" element="tns:ConfirmarArquivoNDDResponse" />
+  </wsdl:message>
+  <wsdl:portType name="AR-DFe_x0020_LKMSoap">
+    <wsdl:operation name="EnviarArquivo">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Processamento de OCR via arquivo PDF</wsdl:documentation>
+      <wsdl:input message="tns:EnviarArquivoSoapIn" />
+      <wsdl:output message="tns:EnviarArquivoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ObterLista">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Obtenção de lista de arquivos para download</wsdl:documentation>
+      <wsdl:input message="tns:ObterListaSoapIn" />
+      <wsdl:output message="tns:ObterListaSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ObterArquivo">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Obtenção de arquivo para download</wsdl:documentation>
+      <wsdl:input message="tns:ObterArquivoSoapIn" />
+      <wsdl:output message="tns:ObterArquivoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmarArquivo">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Confirmação de arquivo para finalização</wsdl:documentation>
+      <wsdl:input message="tns:ConfirmarArquivoSoapIn" />
+      <wsdl:output message="tns:ConfirmarArquivoSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ObterListaNDD">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Obtenção de lista de arquivos NDD para download</wsdl:documentation>
+      <wsdl:input message="tns:ObterListaNDDSoapIn" />
+      <wsdl:output message="tns:ObterListaNDDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ObterArquivoNDD">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Obtenção de arquivo NDD para download</wsdl:documentation>
+      <wsdl:input message="tns:ObterArquivoNDDSoapIn" />
+      <wsdl:output message="tns:ObterArquivoNDDSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmarArquivoNDD">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Confirmação de arquivo NDD para finalização</wsdl:documentation>
+      <wsdl:input message="tns:ConfirmarArquivoNDDSoapIn" />
+      <wsdl:output message="tns:ConfirmarArquivoNDDSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="AR-DFe_x0020_LKMSoap" type="tns:AR-DFe_x0020_LKMSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="EnviarArquivo">
+      <soap:operation soapAction="http://ardfe.lkm.com.br/EnviarArquivo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObterLista">
+      <soap:operation soapAction="http://ardfe.lkm.com.br/ObterLista" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObterArquivo">
+      <soap:operation soapAction="http://ardfe.lkm.com.br/ObterArquivo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmarArquivo">
+      <soap:operation soapAction="http://ardfe.lkm.com.br/ConfirmarArquivo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObterListaNDD">
+      <soap:operation soapAction="http://ardfe.lkm.com.br/ObterListaNDD" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObterArquivoNDD">
+      <soap:operation soapAction="http://ardfe.lkm.com.br/ObterArquivoNDD" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmarArquivoNDD">
+      <soap:operation soapAction="http://ardfe.lkm.com.br/ConfirmarArquivoNDD" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="AR-DFe_x0020_LKMSoap12" type="tns:AR-DFe_x0020_LKMSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="EnviarArquivo">
+      <soap12:operation soapAction="http://ardfe.lkm.com.br/EnviarArquivo" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObterLista">
+      <soap12:operation soapAction="http://ardfe.lkm.com.br/ObterLista" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObterArquivo">
+      <soap12:operation soapAction="http://ardfe.lkm.com.br/ObterArquivo" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmarArquivo">
+      <soap12:operation soapAction="http://ardfe.lkm.com.br/ConfirmarArquivo" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObterListaNDD">
+      <soap12:operation soapAction="http://ardfe.lkm.com.br/ObterListaNDD" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObterArquivoNDD">
+      <soap12:operation soapAction="http://ardfe.lkm.com.br/ObterArquivoNDD" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmarArquivoNDD">
+      <soap12:operation soapAction="http://ardfe.lkm.com.br/ConfirmarArquivoNDD" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="AR-DFe_x0020_LKM">
+    <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">AR-DFe LKM - Processamento de OCR para notas fiscais de serviço</wsdl:documentation>
+    <wsdl:port name="AR-DFe_x0020_LKMSoap" binding="tns:AR-DFe_x0020_LKMSoap">
+      <soap:address location="http://192.168.197.22/ocr_async_qas/ocr.asmx" />
+    </wsdl:port>
+    <wsdl:port name="AR-DFe_x0020_LKMSoap12" binding="tns:AR-DFe_x0020_LKMSoap12">
+      <soap12:address location="http://192.168.197.22/ocr_async_qas/ocr.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

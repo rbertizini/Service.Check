@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -296,6 +297,14 @@ namespace Service.Check
 
                     continue;
                 }
+
+                //Contagem e tamanho de diretório
+                if (info[0] == "A")
+                {
+                    checkAPI(info[1], info[2], info[3]);
+
+                    continue;
+                }
             }
 
             //Resumo
@@ -487,7 +496,65 @@ namespace Service.Check
 
             Console.ReadKey();
         }
-        
+
+        /// <summary>
+        /// Força o consumo de ObterListaNDD para permitir visualização via portla de consulta
+        /// </summary>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
+        private static void checkAPI(string strUrl, string strDir, string strAmb)
+        {
+            Console.ResetColor();
+            Console.WriteLine(string.Concat("A-URL: ", strUrl));
+
+            Console.ResetColor();
+            Console.WriteLine(string.Concat("A-Dir. base: ", strDir));
+
+            string status = string.Empty;
+            ConsoleColor color = ConsoleColor.White;
+            try
+            {
+                //Processando a partir do diretório de origem
+                var dirs = Directory.GetDirectories(strDir, "*", SearchOption.AllDirectories);
+                foreach (string dir in dirs)
+                {
+                    //Montando xml
+                    var sDir = new DirectoryInfo(dir).Name;
+
+                    //Criando XML para consulta
+                    string timeIni = string.Empty;
+                    string timeFim = string.Empty;
+                    string timeDif = string.Empty;
+                    if (strAmb.Trim() == "PRD")
+                    {
+                        ListaNDDPRD.ARDFeLKM ocrLista = new ListaNDDPRD.ARDFeLKM();
+                        ocrLista.ObterListaNDD(sDir, strAmb, "W", out timeIni, out timeFim, out timeDif);
+                    }
+                    if (strAmb.Trim() == "QAS")
+                    {
+                        ListaNDDQAS.ARDFeLKM ocrLista = new ListaNDDQAS.ARDFeLKM();
+                        ocrLista.ObterListaNDD(sDir, strAmb, "W", out timeIni, out timeFim, out timeDif);
+                    }
+
+                    //Log
+                    Console.ResetColor();
+                    Console.Write("A-Cliente: ");
+
+                    color = ConsoleColor.Green;
+                    Console.ForegroundColor = color;
+                    Console.Write(sDir);
+                    Console.ResetColor();
+                    Console.Write("\r\n");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write(string.Concat(" ! " + ex.Message));
+                Console.ResetColor();
+            }
+        }
+
         private static void MoveFile(string dirOrig, string dirDest, out int mSuc, out int mErr)
         {
             Console.ResetColor();
